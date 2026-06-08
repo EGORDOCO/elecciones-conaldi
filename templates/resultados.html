@@ -1,0 +1,210 @@
+{% comment %}
+  ✏️ AÑO — Busca "2026" en este archivo y cámbialo por el año actual
+  ✏️ COLORES — Los colores se controlan desde base.html (variables CSS)
+{% endcomment %}
+{% extends "base.html" %}
+{% block title %}Resultados — Elecciones CONALDI 2026{% endblock %}
+
+{% block extra_css %}
+<style>
+  .resultados-header {
+    background: linear-gradient(135deg, #1A1A1A, #333);
+    border-radius: 16px;
+    padding: 2rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .resultados-header h1 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; }
+  .cargo-seccion { margin-bottom: 2.5rem; }
+  .cargo-titulo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .resultado-card {
+    background: var(--blanco);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 0.8rem;
+    box-shadow: var(--sombra);
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .resultado-card.ganador {
+    border: 2px solid var(--verde);
+    background: linear-gradient(to right, #F0FDF4, #fff);
+  }
+  .resultado-card .barra-fondo {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    background: rgba(10,124,78,0.06);
+    border-radius: 14px;
+    transition: width 0.5s ease;
+  }
+  .resultado-card .posicion {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    min-width: 2.5rem;
+    text-align: center;
+    position: relative;
+  }
+  .resultado-card .mini-foto {
+    width: 52px; height: 52px;
+    border-radius: 10px;
+    background: #e8e8e0;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    position: relative;
+  }
+  .resultado-card .mini-foto img { width: 100%; height: 100%; object-fit: cover; }
+  .resultado-card .info { flex: 1; position: relative; }
+  .resultado-card .info .nombre { font-weight: 700; font-size: 0.95rem; }
+  .resultado-card .info .eslogan { font-size: 0.8rem; color: var(--gris); }
+  .resultado-card .votos-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--verde);
+    min-width: 4rem;
+    text-align: right;
+    position: relative;
+  }
+  .resultado-card .porcentaje {
+    font-size: 0.78rem;
+    color: var(--gris);
+    font-weight: 600;
+    position: relative;
+  }
+  .corona { position: absolute; top: -8px; right: -4px; font-size: 1.2rem; }
+  .nulos-row {
+    background: var(--fondo);
+    border-radius: 10px;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--gris);
+    margin-top: 0.4rem;
+  }
+  .total-row {
+    border-top: 2px solid var(--borde);
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="resultados-header">
+  <div>
+    <h1>📊 Resultados Electorales</h1>
+    <p style="opacity:0.7;font-size:0.9rem;margin-top:0.3rem;">
+      {{ eleccion.nombre if eleccion else 'Elecciones 2026' }}
+      {% if eleccion and eleccion.estado == 'activa' %}
+        — <span style="color:#86EFAC;">🟢 En curso</span>
+      {% elif eleccion and eleccion.estado == 'cerrada' %}
+        — <span style="color:#FCA5A5;">🔴 Cerradas</span>
+      {% endif %}
+    </p>
+  </div>
+  <a href="{{ url_for('admin_panel') }}" class="btn" style="background:rgba(255,255,255,0.15);color:#fff;">← Panel</a>
+</div>
+
+<!-- PERSONERO -->
+<div class="cargo-seccion">
+  <div class="cargo-titulo">🎖️ Personero Estudiantil <span style="font-size:0.85rem;font-weight:400;color:var(--gris);">Total: {{ total_p }} votos</span></div>
+  {% for idx, c in enumerate(personeros) %}
+  <div class="resultado-card {% if idx == 0 and total_p > 0 %}ganador{% endif %}">
+    <div class="barra-fondo" style="width:{% if total_p > 0 %}{{ (c.votos / total_p * 100)|int }}%{% else %}0%{% endif %}"></div>
+    <div class="posicion">
+      {% if idx == 0 %}🥇{% elif idx == 1 %}🥈{% elif idx == 2 %}🥉{% else %}{{ idx + 1 }}{% endif %}
+    </div>
+    <div class="mini-foto">
+      {% if c.foto and c.foto != 'default.jpg' %}
+        <img src="{{ url_for('static', filename='uploads/' + c.foto) }}">
+      {% else %}👤{% endif %}
+      {% if idx == 0 and total_p > 0 %}<span class="corona">👑</span>{% endif %}
+    </div>
+    <div class="info">
+      <div class="nombre">#{{ c.numero }} {{ c.nombre }}</div>
+      <div class="eslogan">{{ c.eslogan or '—' }}</div>
+    </div>
+    <div style="text-align:right;position:relative;">
+      <div class="votos-num">{{ c.votos }}</div>
+      <div class="porcentaje">{% if total_p > 0 %}{{ "%.1f"|format(c.votos / total_p * 100) }}%{% else %}—{% endif %}</div>
+    </div>
+  </div>
+  {% endfor %}
+  {% if eleccion and eleccion.votos_nulos_personero > 0 %}
+  <div class="nulos-row">
+    <span>🗳️ Votos en blanco</span>
+    <span><strong>{{ eleccion.votos_nulos_personero }}</strong> ({{ "%.1f"|format(eleccion.votos_nulos_personero / total_p * 100) if total_p > 0 else 0 }}%)</span>
+  </div>
+  {% endif %}
+  <div class="total-row">
+    <span>Total votos Personero</span>
+    <span>{{ total_p }}</span>
+  </div>
+</div>
+
+<!-- CONTRALOR -->
+<div class="cargo-seccion">
+  <div class="cargo-titulo" style="color:#1D4ED8;">📋 Contralor Estudiantil <span style="font-size:0.85rem;font-weight:400;color:var(--gris);">Total: {{ total_c }} votos</span></div>
+  {% for idx, c in enumerate(contralores) %}
+  <div class="resultado-card {% if idx == 0 and total_c > 0 %}ganador{% endif %}" style="{% if idx == 0 and total_c > 0 %}border-color:#1D4ED8;background:linear-gradient(to right,#EFF6FF,#fff){% endif %}">
+    <div class="barra-fondo" style="width:{% if total_c > 0 %}{{ (c.votos / total_c * 100)|int }}%{% else %}0%{% endif %};background:rgba(29,78,216,0.06)"></div>
+    <div class="posicion">
+      {% if idx == 0 %}🥇{% elif idx == 1 %}🥈{% elif idx == 2 %}🥉{% else %}{{ idx + 1 }}{% endif %}
+    </div>
+    <div class="mini-foto">
+      {% if c.foto and c.foto != 'default.jpg' %}
+        <img src="{{ url_for('static', filename='uploads/' + c.foto) }}">
+      {% else %}👤{% endif %}
+      {% if idx == 0 and total_c > 0 %}<span class="corona">👑</span>{% endif %}
+    </div>
+    <div class="info">
+      <div class="nombre">#{{ c.numero }} {{ c.nombre }}</div>
+      <div class="eslogan">{{ c.eslogan or '—' }}</div>
+    </div>
+    <div style="text-align:right;position:relative;">
+      <div class="votos-num" style="color:#1D4ED8;">{{ c.votos }}</div>
+      <div class="porcentaje">{% if total_c > 0 %}{{ "%.1f"|format(c.votos / total_c * 100) }}%{% else %}—{% endif %}</div>
+    </div>
+  </div>
+  {% endfor %}
+  {% if eleccion and eleccion.votos_nulos_contralor > 0 %}
+  <div class="nulos-row">
+    <span>🗳️ Votos en blanco</span>
+    <span><strong>{{ eleccion.votos_nulos_contralor }}</strong> ({{ "%.1f"|format(eleccion.votos_nulos_contralor / total_c * 100) if total_c > 0 else 0 }}%)</span>
+  </div>
+  {% endif %}
+  <div class="total-row">
+    <span>Total votos Contralor</span>
+    <span>{{ total_c }}</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Añadir enumerate a Jinja desde Python no está disponible en el template directamente,
+// así que hacemos el conteo via CSS counter
+</script>
+{% endblock %}

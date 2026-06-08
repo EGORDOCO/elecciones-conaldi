@@ -1,0 +1,117 @@
+{% comment %}
+  ✏️ AÑO — Busca "2027" en este archivo y cámbialo por el año actual
+  ✏️ COLORES — Los colores se controlan desde base.html (variables CSS)
+{% endcomment %}
+{% extends "base.html" %}
+{% block title %}Ingresar — Elecciones CONALDI 2027{% endblock %}
+
+{% block extra_css %}
+<style>
+  .login-wrap {
+    max-width: 440px;
+    margin: 3rem auto;
+  }
+  .login-card {
+    background: var(--blanco);
+    border-radius: 20px;
+    box-shadow: var(--sombra-hover);
+    padding: 2.5rem;
+  }
+  .login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .login-header .escudo {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--verde), var(--verde-claro));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1rem;
+    box-shadow: 0 8px 24px rgba(10,124,78,0.3);
+  }
+  .login-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+  }
+  .login-header p { color: var(--gris); font-size: 0.9rem; }
+  .form-group { margin-bottom: 1.4rem; }
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--texto);
+    margin-bottom: 0.5rem;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px solid var(--borde);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-group input:focus {
+    border-color: var(--verde);
+    background: #fff;
+  }
+  .btn-login {
+    width: 100%;
+    padding: 1rem;
+    background: var(--verde);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+  }
+  .btn-login:hover { background: var(--verde-claro); transform: translateY(-1px); }
+  .ayuda {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--gris);
+    background: var(--fondo);
+    border-radius: 8px;
+    padding: 0.75rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="escudo">🗳️</div>
+      <h1>Ingresar a Votar</h1>
+      <p>Elecciones Escolares CONALDI 2027</p>
+    </div>
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="form-group">
+        <label for="documento">Número de Documento</label>
+        <input type="text" id="documento" name="documento" placeholder="Ej: 1234567890" required autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" placeholder="Contraseña asignada por el colegio" required>
+      </div>
+      <button type="submit" class="btn-login">Ingresar →</button>
+    </form>
+    <div class="ayuda">
+      🔐 ¿Olvidaste tu contraseña? Comunícate con la coordinación del colegio.
+    </div>
+  </div>
+</div>
+{% endblock %}

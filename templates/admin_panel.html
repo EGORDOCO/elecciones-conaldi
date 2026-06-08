@@ -1,0 +1,332 @@
+{% comment %}
+  ✏️ AÑO — Busca "2027" en este archivo y cámbialo por el año actual
+  ✏️ COLORES — Los colores se controlan desde base.html (variables CSS)
+{% endcomment %}
+{% extends "base.html" %}
+{% block title %}Panel Admin — Elecciones CONALDI{% endblock %}
+
+{% block extra_css %}
+<style>
+  .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card {
+    background: var(--blanco);
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    box-shadow: var(--sombra);
+  }
+  .stat-card .num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--verde); }
+  .stat-card .lbl { font-size: 0.8rem; color: var(--gris); margin-top: 0.2rem; }
+  /* ESTADO */
+  .estado-control {
+    background: var(--blanco);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    box-shadow: var(--sombra);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .estado-info h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .estado-btns { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+  /* FORM CANDIDATO */
+  .form-candidato { display: grid; gap: 0.8rem; }
+  .form-candidato input, .form-candidato select, .form-candidato textarea {
+    width: 100%; padding: 0.7rem 0.9rem;
+    border: 2px solid var(--borde); border-radius: 8px;
+    font-size: 0.88rem; font-family: 'Inter', sans-serif;
+    background: var(--fondo); outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-candidato input:focus, .form-candidato select:focus { border-color: var(--verde); background: #fff; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  /* CANDIDATO LIST */
+  .candidato-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem;
+    background: var(--fondo);
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+  }
+  .candidato-item .mini-foto {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    background: #e0e0d8;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; flex-shrink: 0;
+  }
+  .candidato-item .mini-foto img { width: 100%; height: 100%; object-fit: cover; }
+  .candidato-item .info { flex: 1; }
+  .candidato-item .info .name { font-weight: 700; font-size: 0.9rem; }
+  .candidato-item .info .eslogan { font-size: 0.78rem; color: var(--gris); }
+  .candidato-item .num-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--verde);
+    min-width: 2rem;
+    text-align: center;
+  }
+  /* UPLOAD */
+  .upload-zone {
+    border: 2px dashed var(--borde);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--fondo);
+  }
+  .upload-zone:hover { border-color: var(--verde); background: #f0fdf4; }
+  .upload-zone input { display: none; }
+  .upload-zone label { cursor: pointer; font-size: 0.85rem; color: var(--gris); }
+  .seccion-titulo-admin {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 1rem 0 0.7rem;
+    border-bottom: 2px solid var(--borde);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .count-badge {
+    font-size: 0.78rem;
+    background: var(--verde);
+    color: #fff;
+    padding: 0.15rem 0.6rem;
+    border-radius: 99px;
+  }
+  .modal-edit { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; align-items: center; justify-content: center; }
+  .modal-edit.show { display: flex; }
+  .modal-edit-box { background: #fff; border-radius: 16px; padding: 2rem; max-width: 420px; width: 90%; box-shadow: 0 24px 80px rgba(0,0,0,0.2); }
+  .modal-edit-box h3 { font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 1rem; }
+  @media (max-width: 768px) {
+    .admin-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:1.5rem;">
+  ⚙️ Panel Administrativo
+</h1>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="num">{{ total_estudiantes }}</div>
+    <div class="lbl">Estudiantes registrados</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">{{ votos_personero }}</div>
+    <div class="lbl">Votos Personero</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">{{ votos_contralor }}</div>
+    <div class="lbl">Votos Contralor</div>
+  </div>
+  <div class="stat-card">
+    <div class="num {% if eleccion and eleccion.estado == 'activa' %}{% endif %}" style="color:{% if eleccion and eleccion.estado == 'activa' %}var(--verde){% elif eleccion and eleccion.estado == 'cerrada' %}var(--rojo){% else %}#F59E0B{% endif %}">
+      {% if eleccion %}
+        {% if eleccion.estado == 'activa' %}🟢{% elif eleccion.estado == 'cerrada' %}🔴{% else %}🟡{% endif %}
+      {% endif %}
+    </div>
+    <div class="lbl">Estado: <strong>{{ eleccion.estado if eleccion else 'N/A' }}</strong></div>
+  </div>
+</div>
+
+<!-- CONTROL DE ESTADO -->
+<div class="estado-control">
+  <div class="estado-info">
+    <h3>Control de Votaciones</h3>
+    <p style="font-size:0.85rem;color:var(--gris);">Gestiona cuándo los estudiantes pueden votar.</p>
+  </div>
+  <div class="estado-btns">
+    {% if eleccion and eleccion.estado != 'activa' %}
+    <form method="POST" action="{{ url_for('cambiar_estado') }}">
+      <input type="hidden" name="estado" value="activa">
+      <button type="submit" class="btn btn-primary">▶️ Abrir Votaciones</button>
+    </form>
+    {% endif %}
+    {% if eleccion and eleccion.estado == 'activa' %}
+    <form method="POST" action="{{ url_for('cambiar_estado') }}">
+      <input type="hidden" name="estado" value="cerrada">
+      <button type="submit" class="btn btn-danger" onclick="return confirm('¿Cerrar votaciones definitivamente?')">🔒 Cerrar Votaciones</button>
+    </form>
+    {% endif %}
+    <a href="{{ url_for('resultados') }}" class="btn btn-outline">📊 Ver Resultados</a>
+    <form method="POST" action="{{ url_for('reset_votos') }}" onsubmit="return confirm('⚠️ ¿REINICIAR TODOS LOS VOTOS? Esta acción no se puede deshacer.')">
+      <button type="submit" class="btn" style="background:#FEF3C7;color:#92400E;">🔄 Reset</button>
+    </form>
+  </div>
+</div>
+
+<div class="admin-grid">
+  <!-- CARGAR ESTUDIANTES -->
+  <div class="card">
+    <div class="card-header"><h2>📥 Cargar Estudiantes</h2></div>
+    <div class="card-body">
+      <p style="font-size:0.85rem;color:var(--gris);margin-bottom:1rem;">
+        Sube un archivo Excel o CSV con columnas: <code>documento</code>, <code>nombre</code>, <code>password</code> y opcionalmente <code>grado</code>.
+      </p>
+      <form method="POST" action="{{ url_for('cargar_estudiantes') }}" enctype="multipart/form-data">
+        <div class="upload-zone" onclick="document.getElementById('file-upload').click()">
+          <input type="file" id="file-upload" name="archivo" accept=".xlsx,.xls,.csv" onchange="mostrarNombreArchivo(this)">
+          <div style="font-size:2rem;margin-bottom:0.5rem;">📂</div>
+          <label>Haz clic para seleccionar archivo Excel o CSV</label>
+          <div id="nombre-archivo" style="margin-top:0.5rem;font-weight:600;color:var(--verde);font-size:0.85rem;"></div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:1rem;justify-content:center;">
+          Cargar Estudiantes
+        </button>
+      </form>
+      <div style="margin-top:1rem;font-size:0.78rem;color:var(--gris);">
+        💡 Si el documento ya existe, se actualizará la contraseña. Total actual: <strong>{{ total_estudiantes }}</strong> estudiantes.
+      </div>
+    </div>
+  </div>
+
+  <!-- AGREGAR CANDIDATO -->
+  <div class="card">
+    <div class="card-header"><h2>➕ Agregar Candidato</h2></div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('nuevo_candidato') }}" enctype="multipart/form-data" class="form-candidato">
+        <div class="form-row">
+          <div>
+            <label style="font-size:0.82rem;font-weight:600;display:block;margin-bottom:0.3rem;">Cargo</label>
+            <select name="cargo">
+              <option value="personero">Personero</option>
+              <option value="contralor">Contralor</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.82rem;font-weight:600;display:block;margin-bottom:0.3rem;">Número</label>
+            <input type="number" name="numero" min="1" max="6" placeholder="1-6" required>
+          </div>
+        </div>
+        <input type="text" name="nombre" placeholder="Nombre completo del candidato" required>
+        <input type="text" name="eslogan" placeholder="Eslogan del candidato (máx 150 chars)">
+        <div>
+          <label style="font-size:0.82rem;font-weight:600;display:block;margin-bottom:0.3rem;">Foto del candidato</label>
+          <input type="file" name="foto" accept="image/*" style="width:100%;padding:0.5rem;border:2px dashed var(--borde);border-radius:8px;background:var(--fondo);">
+        </div>
+        <button type="submit" class="btn btn-primary" style="justify-content:center;">Agregar Candidato</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- CANDIDATOS ACTUALES -->
+<div style="margin-top:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+  <!-- PERSONEROS -->
+  <div class="card">
+    <div class="card-header">
+      <h2>🎖️ Candidatos Personero</h2>
+      <span class="count-badge">{{ candidatos_p|length }} / 6</span>
+    </div>
+    <div class="card-body">
+      {% if not candidatos_p %}
+        <p style="color:var(--gris);font-size:0.85rem;text-align:center;padding:1rem;">No hay candidatos aún.</p>
+      {% endif %}
+      {% for c in candidatos_p %}
+      <div class="candidato-item">
+        <div class="num-badge">#{{ c.numero }}</div>
+        <div class="mini-foto">
+          {% if c.foto and c.foto != 'default.jpg' %}
+            <img src="{{ url_for('static', filename='uploads/' + c.foto) }}">
+          {% else %}👤{% endif %}
+        </div>
+        <div class="info">
+          <div class="name">{{ c.nombre }}</div>
+          <div class="eslogan">{{ c.eslogan or '—' }}</div>
+        </div>
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn btn-outline" style="padding:0.3rem 0.7rem;font-size:0.78rem;" onclick="abrirEditar({{ c.id }}, '{{ c.nombre|e }}', '{{ c.eslogan|e }}', {{ c.numero }})">✏️</button>
+          <form method="POST" action="{{ url_for('eliminar_candidato', cid=c.id) }}" onsubmit="return confirm('¿Desactivar candidato?')">
+            <button type="submit" class="btn btn-danger" style="padding:0.3rem 0.7rem;font-size:0.78rem;">🗑️</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- CONTRALORES -->
+  <div class="card">
+    <div class="card-header">
+      <h2>📋 Candidatos Contralor</h2>
+      <span class="count-badge" style="background:#1D4ED8;">{{ candidatos_c|length }} / 6</span>
+    </div>
+    <div class="card-body">
+      {% if not candidatos_c %}
+        <p style="color:var(--gris);font-size:0.85rem;text-align:center;padding:1rem;">No hay candidatos aún.</p>
+      {% endif %}
+      {% for c in candidatos_c %}
+      <div class="candidato-item">
+        <div class="num-badge" style="color:#1D4ED8;">#{{ c.numero }}</div>
+        <div class="mini-foto">
+          {% if c.foto and c.foto != 'default.jpg' %}
+            <img src="{{ url_for('static', filename='uploads/' + c.foto) }}">
+          {% else %}👤{% endif %}
+        </div>
+        <div class="info">
+          <div class="name">{{ c.nombre }}</div>
+          <div class="eslogan">{{ c.eslogan or '—' }}</div>
+        </div>
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn btn-outline" style="padding:0.3rem 0.7rem;font-size:0.78rem;" onclick="abrirEditar({{ c.id }}, '{{ c.nombre|e }}', '{{ c.eslogan|e }}', {{ c.numero }})">✏️</button>
+          <form method="POST" action="{{ url_for('eliminar_candidato', cid=c.id) }}" onsubmit="return confirm('¿Desactivar candidato?')">
+            <button type="submit" class="btn btn-danger" style="padding:0.3rem 0.7rem;font-size:0.78rem;">🗑️</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div class="modal-edit" id="modal-editar">
+  <div class="modal-edit-box">
+    <h3>✏️ Editar Candidato</h3>
+    <form method="POST" id="form-editar" enctype="multipart/form-data" class="form-candidato">
+      <input type="text" name="nombre" id="edit-nombre" placeholder="Nombre" required>
+      <input type="text" name="eslogan" id="edit-eslogan" placeholder="Eslogan">
+      <input type="number" name="numero" id="edit-numero" min="1" max="6" placeholder="Número">
+      <input type="file" name="foto" accept="image/*">
+      <div style="display:flex;gap:0.8rem;margin-top:0.5rem;">
+        <button type="button" class="btn btn-outline" onclick="cerrarEditar()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center;">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function mostrarNombreArchivo(input) {
+  const div = document.getElementById('nombre-archivo');
+  div.textContent = input.files[0] ? '📄 ' + input.files[0].name : '';
+}
+function abrirEditar(id, nombre, eslogan, numero) {
+  document.getElementById('edit-nombre').value = nombre;
+  document.getElementById('edit-eslogan').value = eslogan;
+  document.getElementById('edit-numero').value = numero;
+  document.getElementById('form-editar').action = '/admin/candidato/editar/' + id;
+  document.getElementById('modal-editar').classList.add('show');
+}
+function cerrarEditar() {
+  document.getElementById('modal-editar').classList.remove('show');
+}
+</script>
+{% endblock %}

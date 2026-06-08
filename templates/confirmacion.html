@@ -1,0 +1,91 @@
+{% comment %}
+  ✏️ AÑO — Busca "2027" en este archivo y cámbialo por el año actual
+  ✏️ COLORES — Los colores se controlan desde base.html (variables CSS)
+{% endcomment %}
+{% extends "base.html" %}
+{% block title %}¡Gracias por votar!{% endblock %}
+
+{% block extra_css %}
+<style>
+  .confirm-wrap { max-width: 560px; margin: 4rem auto; text-align: center; }
+  .checkmark {
+    width: 100px; height: 100px;
+    background: linear-gradient(135deg, var(--verde), var(--verde-claro));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 2rem;
+    box-shadow: 0 12px 40px rgba(10,124,78,0.35);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes popIn { 0%{transform:scale(0);opacity:0} 100%{transform:scale(1);opacity:1} }
+  h1 { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; margin-bottom: 0.7rem; }
+  .sub { color: var(--gris); font-size: 1rem; line-height: 1.6; margin-bottom: 2rem; }
+  .votos-resumen {
+    background: var(--blanco);
+    border-radius: 14px;
+    box-shadow: var(--sombra);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+  .voto-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--borde);
+  }
+  .voto-row:last-child { border-bottom: none; }
+  .voto-row .cargo { font-size: 0.85rem; color: var(--gris); }
+  .voto-row .estado { font-weight: 700; color: var(--verde); }
+  .colombia-flag {
+    display: flex;
+    gap: 0;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+  }
+  .colombia-flag span { flex: 1; }
+  .colombia-flag .am { background: #F5C800; flex: 2; }
+  .colombia-flag .az { background: #003087; }
+  .colombia-flag .ro { background: #CE1126; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirm-wrap">
+  <div class="checkmark">✓</div>
+  <div class="colombia-flag">
+    <span class="am"></span>
+    <span class="az"></span>
+    <span class="ro"></span>
+  </div>
+  <h1>¡Gracias, {{ estudiante.nombre.split()[0] }}!</h1>
+  <p class="sub">Tu participación hace parte de la democracia escolar.<br>Tu voto ha sido registrado correctamente.</p>
+
+  <div class="votos-resumen">
+    <div class="voto-row">
+      <span class="cargo">🎖️ Personero Estudiantil</span>
+      <span class="estado">{% if estudiante.ha_votado_personero %}✅ Votaste{% else %}⬜ Pendiente{% endif %}</span>
+    </div>
+    <div class="voto-row">
+      <span class="cargo">📋 Contralor Estudiantil</span>
+      <span class="estado">{% if estudiante.ha_votado_contralor %}✅ Votaste{% else %}⬜ Pendiente{% endif %}</span>
+    </div>
+  </div>
+
+  {% if not estudiante.ha_votado_personero or not estudiante.ha_votado_contralor %}
+    <a href="{{ url_for('votar') }}" class="btn btn-primary" style="font-size:1rem; padding: 0.9rem 2rem;">
+      Completar mi voto →
+    </a>
+  {% else %}
+    <a href="{{ url_for('logout') }}" class="btn btn-outline" style="font-size:1rem; padding: 0.9rem 2rem;">
+      Cerrar sesión
+    </a>
+  {% endif %}
+</div>
+{% endblock %}

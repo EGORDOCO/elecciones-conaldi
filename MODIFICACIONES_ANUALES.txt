@@ -1,0 +1,41 @@
+╔══════════════════════════════════════════════════════════════╗
+║  SISTEMA DE VOTACIÓN ESCOLAR — CONALDI                       ║
+║  Guía de Modificaciones para Cada Año Electoral              ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  CAMBIOS OBLIGATORIOS CADA AÑO:                              ║
+║                                                              ║
+║  1. app.py                                                   ║
+║     Busca: # ✏️ AÑO        → cambia '2026' por el nuevo año ║
+║     Busca: # ✏️ CLAVE_ADMIN → cambia la contraseña de admin  ║
+║     Busca: # ✏️ SECRET_KEY  → cambia la llave secreta        ║
+║                                                              ║
+║  2. templates/base.html                                      ║
+║     Busca: <!-- ✏️ AÑO -->  → actualiza el año               ║
+║     Busca: /* ✏️ COLOR */   → cambia colores si deseas       ║
+║     Busca: <!-- ✏️ ESCUDO →  reemplaza SVG por imagen real   ║
+║                                                              ║
+║  PASOS PARA REINICIAR EL SISTEMA CADA AÑO:                   ║
+║                                                              ║
+║  a) Edita los archivos marcados con ✏️                       ║
+║  b) Guarda una copia de: instance/elecciones.db              ║
+║     (renómbrala: resultados_2026.db para archivarla)         ║
+║  c) Borra el archivo: instance/elecciones.db                 ║
+║  d) Ejecuta: python app.py  (se recrea la BD desde cero)     ║
+║  e) Carga el nuevo Excel de estudiantes                      ║
+║  f) Registra los nuevos candidatos en el panel admin         ║
+║                                                              ║
+║  CÓMO REEMPLAZAR LOS ESCUDOS POR IMÁGENES REALES:            ║
+║                                                              ║
+║  1. Guarda el escudo del colegio en:                         ║
+║     static/img/escudo_colegio.png  (tamaño: 80x80 px)        ║
+║  2. Guarda el escudo de sistemas en:                         ║
+║     static/img/escudo_sistemas.png (tamaño: 80x80 px)        ║
+║  3. En base.html, reemplaza el bloque <svg>...</svg> por:    ║
+║     <img src="{{ url_for('static',                           ║
+║             filename='img/escudo_colegio.png') }}"           ║
+║          width="38" height="38" alt="Escudo CONALDI">        ║
+║                                                              ║
+║  Desarrollado por: Enrique García (Kikegc)                   ║
+║  Docente de Sistemas — I.E. Diversificado de Chía            ║
+╚══════════════════════════════════════════════════════════════╝

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ✏️ AÑO — Cambia "2026" por el año de la elección en todo este archivo -->
+  <title>{% block title %}Elecciones Escolares 2026{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================================
+       ✏️ COLORES — Para cambiar el tema de color cada año,
+       edita únicamente las variables CSS de abajo.
+       --color-primario  : color principal (barra nav, botones, títulos)
+       --color-secundario: color de acento (badges, destacados)
+       --color-acento    : color del botón principal de acción
+       Ejemplos de paletas:
+         Verde institucional (actual): #0A7C4E / #12A367 / #F5C800
+         Azul universitario          : #1D4ED8 / #2563EB / #F59E0B
+         Rojo cívico                 : #B91C1C / #DC2626 / #FCD34D
+    ========================================================= */
+    :root {
+      --color-primario:    #0A7C4E;  /* ✏️ COLOR — color principal */
+      --color-primario-dark: #0D5C3A; /* ✏️ COLOR — tono oscuro del principal */
+      --color-primario-claro: #E8F5EF; /* ✏️ COLOR — fondo suave del principal */
+      --color-secundario: #12A367;  /* ✏️ COLOR — color secundario (hover) */
+      --color-acento:     #F5C800;  /* ✏️ COLOR — color de acento/botón acción */
+      --color-peligro:    #C8302A;
+      --fondo:    #F5F5F0;
+      --blanco:   #FFFFFF;
+      --texto:    #1A1A1A;
+      --gris:     #6B7280;
+      --borde:    #E0E0D8;
+      --sombra:      0 4px 24px rgba(0,0,0,0.08);
+      --sombra-hover: 0 8px 40px rgba(0,0,0,0.14);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; }
+
+    /* ── NAVBAR ───────────────────────────────────────────── */
+    nav {
+      background: var(--color-primario);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+    }
+    .nav-brand {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
+      color: var(--blanco); text-decoration: none;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    /* Escudos en el nav */
+    .nav-escudos { display: flex; align-items: center; gap: 8px; }
+    .nav-escudos svg { width: 38px; height: 38px; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3)); }
+    .nav-separador { width: 1px; height: 32px; background: rgba(255,255,255,0.3); margin: 0 4px; }
+    .nav-titulo { display: flex; flex-direction: column; line-height: 1.2; }
+    .nav-titulo span:first-child { font-size: 1rem; font-weight: 800; }
+    /* ✏️ AÑO — El año en el nav se toma del texto de abajo en el HTML del nav */
+    .nav-titulo span:last-child { font-size: 0.72rem; font-weight: 400; opacity: 0.8; }
+
+    .nav-links { display: flex; gap: 0.75rem; align-items: center; }
+    .nav-links a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 0.4rem 0.8rem; border-radius: 6px; transition: all 0.2s; }
+    .nav-links a:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .nav-links .btn-nav { background: var(--color-acento); color: var(--texto) !important; font-weight: 600; }
+    .nav-links .btn-nav:hover { opacity: 0.9; }
+
+    /* ── ALERTAS ──────────────────────────────────────────── */
+    .alerts { max-width: 960px; margin: 1.5rem auto 0; padding: 0 1.5rem; }
+    .alert { padding: 0.85rem 1.2rem; border-radius: 10px; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
+    .alert-error   { background: #FEE2E2; color: #991B1B; border-left: 4px solid var(--color-peligro); }
+    .alert-success { background: var(--color-primario-claro); color: #065F46; border-left: 4px solid var(--color-primario); }
+    .alert-info    { background: #DBEAFE; color: #1E40AF; border-left: 4px solid #3B82F6; }
+
+    /* ── BOTONES ──────────────────────────────────────────── */
+    .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.4rem; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none; border: none; transition: all 0.2s; }
+    .btn-primary  { background: var(--color-primario); color: #fff; }
+    .btn-primary:hover { background: var(--color-secundario); transform: translateY(-1px); }
+    .btn-danger   { background: var(--color-peligro); color: #fff; }
+    .btn-danger:hover { background: #b02020; }
+    .btn-outline  { background: transparent; border: 2px solid var(--color-primario); color: var(--color-primario); }
+    .btn-outline:hover { background: var(--color-primario); color: #fff; }
+    .btn-acento   { background: var(--color-acento); color: var(--texto); }
+    .btn-acento:hover { opacity: 0.9; }
+
+    /* ── LAYOUT ───────────────────────────────────────────── */
+    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .card { background: var(--blanco); border-radius: 16px; box-shadow: var(--sombra); overflow: hidden; }
+    .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--borde); display: flex; justify-content: space-between; align-items: center; }
+    .card-header h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
+    .card-body { padding: 2rem; }
+
+    /* ── BADGES ───────────────────────────────────────────── */
+    .badge-verde   { background: var(--color-primario-claro); color: #065F46; padding: 0.2rem 0.7rem; border-radius: 99px; font-size: 0.78rem; font-weight: 600; }
+    .badge-rojo    { background: #FEE2E2; color: #991B1B; padding: 0.2rem 0.7rem; border-radius: 99px; font-size: 0.78rem; font-weight: 600; }
+    .badge-amarillo{ background: #FEF3C7; color: #92400E; padding: 0.2rem 0.7rem; border-radius: 99px; font-size: 0.78rem; font-weight: 600; }
+
+    /* ── FOOTER ───────────────────────────────────────────── */
+    footer {
+      text-align: center; padding: 2rem; color: var(--gris);
+      font-size: 0.82rem; border-top: 1px solid var(--borde); margin-top: 4rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+    }
+    .footer-escudos { display: flex; align-items: center; gap: 12px; }
+    .footer-escudos svg { width: 32px; height: 32px; opacity: 0.7; }
+
+    @media (max-width: 640px) {
+      nav { padding: 0 1rem; }
+      .nav-titulo span:last-child { display: none; }
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     NAVBAR
+     ✏️ AÑO — Actualiza "2026" en el span de abajo
+     ✏️ INSTITUCIÓN — Cambia el nombre si fuera necesario
+     ✏️ ESCUDOS — Los SVG inline de abajo son los escudos del
+        colegio y de la especialidad. Para reemplazarlos por
+        una imagen real, cambia el <svg> por:
+        <img src="{{ url_for('static', filename='img/escudo_colegio.png') }}" width="38" height="38">
+        y coloca el archivo PNG en static/img/
+══════════════════════════════════════════════════════════ -->
+<nav>
+  <a class="nav-brand" href="{{ url_for('index') }}">
+    <div class="nav-escudos">
+      <!-- ✏️ ESCUDO COLEGIO — Reemplaza este SVG por la imagen real del escudo -->
+      <img src="{{ url_for('static', filename='img/escudo_colegio.png') }}" width="38" height="38">
+        <defs>
+          <linearGradient id="gc1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#FFD700"/>
+            <stop offset="50%" style="stop-color:#003087"/>
+            <stop offset="100%" style="stop-color:#CE1126"/>
+          </linearGradient>
+        </defs>
+        <path d="M30 2 L58 14 L58 42 C58 56 44 66 30 68 C16 66 2 56 2 42 L2 14 Z" fill="url(#gc1)" stroke="white" stroke-width="1.5"/>
+        <text x="30" y="28" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="9" fill="white">IED</text>
+        <text x="30" y="40" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="6" fill="white">CONALDI</text>
+        <text x="30" y="52" text-anchor="middle" font-family="Arial" font-size="5" fill="white">CHÍA</text>
+      </svg>
+
+      <div class="nav-separador"></div>
+
+      <!-- ✏️ ESCUDO SISTEMAS — Reemplaza este SVG por la imagen real de la especialidad -->
+      <img src="{{ url_for('static', filename='img/escudo_esp.png') }}" width="38" height="38">
+        <defs>
+          <linearGradient id="gs1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0A7C4E"/>
+            <stop offset="100%" style="stop-color:#1D4ED8"/>
+          </linearGradient>
+        </defs>
+        <path d="M30 2 L58 14 L58 42 C58 56 44 66 30 68 C16 66 2 56 2 42 L2 14 Z" fill="url(#gs1)" stroke="white" stroke-width="1.5"/>
+        <rect x="16" y="20" width="28" height="20" rx="2" fill="none" stroke="white" stroke-width="1.5"/>
+        <rect x="22" y="40" width="16" height="3" rx="1" fill="white"/>
+        <rect x="26" y="43" width="8" height="4" rx="1" fill="white"/>
+        <circle cx="30" cy="30" r="4" fill="white" opacity="0.9"/>
+        <text x="30" y="58" text-anchor="middle" font-family="Arial" font-size="5" fill="white">SISTEMAS</text>
+      </svg>
+    </div>
+
+    <div class="nav-titulo">
+      <!-- ✏️ AÑO — Cambia 2026 por el año actual -->
+      <span>Elecciones CONALDI</span>
+      <span>I.E. Diversificado de Chía · 2027</span>
+    </div>
+  </a>
+
+  <div class="nav-links">
+    {% if session.get('estudiante_id') %}
+      <span style="color:rgba(255,255,255,0.8);font-size:0.85rem;">👤 {{ session.get('estudiante_nombre','') }}</span>
+      <a href="{{ url_for('votar') }}">Votar</a>
+      <a href="{{ url_for('logout') }}">Salir</a>
+    {% elif session.get('is_admin') %}
+      <a href="{{ url_for('admin_panel') }}">Panel Admin</a>
+      <a href="{{ url_for('resultados') }}">Resultados</a>
+      <a href="{{ url_for('admin_logout') }}">Salir</a>
+    {% else %}
+      <a href="{{ url_for('login') }}" class="btn-nav">Ingresar a Votar</a>
+      <a href="{{ url_for('admin_login') }}" style="color:rgba(255,255,255,0.55);font-size:0.8rem;">Admin</a>
+    {% endif %}
+  </div>
+</nav>
+
+<!-- ALERTAS FLASH -->
+<div class="alerts">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, msg in messages %}
+      <div class="alert alert-{{ category }}">
+        {% if category == 'error' %}⚠️{% elif category == 'success' %}✅{% else %}ℹ️{% endif %}
+        {{ msg }}
+      </div>
+    {% endfor %}
+  {% endwith %}
+</div>
+
+<main>{% block content %}{% endblock %}</main>
+
+<!-- ══════════════════════════════════════════════════════════
+     FOOTER
+     ✏️ AÑO — Actualiza el año en el texto del pie de página
+══════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-escudos">
+    <!-- Escudo colegio pequeño -->
+    <img src="{{ url_for('static', filename='img/escudo_colegio.png') }}" width="38" height="38">
+      <defs><linearGradient id="gf1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#FFD700"/><stop offset="50%" style="stop-color:#003087"/><stop offset="100%" style="stop-color:#CE1126"/></linearGradient></defs>
+      <path d="M30 2 L58 14 L58 42 C58 56 44 66 30 68 C16 66 2 56 2 42 L2 14 Z" fill="url(#gf1)" stroke="#ccc" stroke-width="1"/>
+      <text x="30" y="30" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="8" fill="white">IED</text>
+      <text x="30" y="42" text-anchor="middle" font-family="Arial" font-size="5" fill="white">CONALDI</text>
+    </svg>
+    <!-- Escudo sistemas pequeño -->
+    <img src="{{ url_for('static', filename='img/escudo_esp.png') }}" width="38" height="38">
+      <defs><linearGradient id="gf2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0A7C4E"/><stop offset="100%" style="stop-color:#1D4ED8"/></linearGradient></defs>
+      <path d="M30 2 L58 14 L58 42 C58 56 44 66 30 68 C16 66 2 56 2 42 L2 14 Z" fill="url(#gf2)" stroke="#ccc" stroke-width="1"/>
+      <rect x="18" y="22" width="24" height="16" rx="2" fill="none" stroke="white" stroke-width="1.2"/>
+      <circle cx="30" cy="30" r="3" fill="white" opacity="0.9"/>
+    </svg>
+  </div>
+  <!-- ✏️ AÑO — Cambia 2026 por el año actual -->
+  <span>© 2027 Institución Educativa Diversificado de Chía — CONALDI &nbsp;·&nbsp; Especialidad Sistemas &nbsp;·&nbsp; Sistema de Votación Escolar</span>
+</footer>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
