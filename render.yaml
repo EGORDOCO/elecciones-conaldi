@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: elecciones-conaldi
+    env: Python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
