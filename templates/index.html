@@ -4,7 +4,8 @@
 {% block extra_css %}
 <style>
   .hero {
-    background: linear-gradient(135deg, var(--verde) 0%, #0D5C3A 100%);
+    /* ✏️ COLOR — Cambia los colores del hero aquí */
+    background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-dark) 100%);
     border-radius: 24px;
     padding: 4rem 3rem;
     color: #fff;
@@ -20,16 +21,18 @@
     position: absolute;
     top: -60px; right: -60px;
     width: 300px; height: 300px;
-    background: rgba(245,200,0,0.12);
+    background: rgba(245,200,0,0.10);
     border-radius: 50%;
+    pointer-events: none;
   }
   .hero::after {
     content: '';
     position: absolute;
     bottom: -80px; left: -40px;
     width: 250px; height: 250px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.04);
     border-radius: 50%;
+    pointer-events: none;
   }
   .hero-text h1 {
     font-family: 'Syne', sans-serif;
@@ -37,14 +40,15 @@
     font-weight: 800;
     line-height: 1.1;
     margin-bottom: 1rem;
+    color: #fff;
   }
   .hero-text h1 em {
     font-style: normal;
-    color: var(--amarillo);
+    color: var(--color-acento);
   }
   .hero-text p {
     font-size: 1.05rem;
-    opacity: 0.85;
+    color: rgba(255,255,255,0.85);
     margin-bottom: 2rem;
     line-height: 1.6;
   }
@@ -63,15 +67,14 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    backdrop-filter: blur(8px);
   }
   .hero-stat .num {
     font-family: 'Syne', sans-serif;
-    font-size: 2rem;
+    font-size: 1.4rem;
     font-weight: 800;
-    color: var(--amarillo);
+    color: var(--color-acento);
   }
-  .hero-stat .lbl { font-size: 0.88rem; opacity: 0.8; }
+  .hero-stat .lbl { font-size: 0.88rem; opacity: 0.85; color: #fff; }
   .estado-badge {
     display: inline-flex;
     align-items: center;
@@ -82,14 +85,34 @@
     font-size: 0.9rem;
     margin-bottom: 1rem;
   }
-  .estado-activa { background: var(--amarillo); color: #1a1a1a; }
-  .estado-config { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
-  .estado-cerrada { background: rgba(200,48,42,0.3); color: #fff; border: 1px solid rgba(200,48,42,0.5); }
-  .estado-activa .dot-anim {
-    width: 8px; height: 8px; background: var(--verde); border-radius: 50%;
+  .estado-activa  { background: var(--color-acento); color: #1a1a1a; }
+  .estado-config  { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+  .estado-cerrada { background: rgba(200,48,42,0.3);   color: #fff; border: 1px solid rgba(200,48,42,0.5); }
+  .dot-anim {
+    width: 8px; height: 8px;
+    background: var(--color-primario);
+    border-radius: 50%;
     animation: pulse 1.5s infinite;
   }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+  .btn-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-acento);
+    color: #1a1a1a;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.9rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(245,200,0,0.35);
+  }
+  .btn-hero:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,200,0,0.5); }
+
   .instrucciones {
     margin-top: 2rem;
     display: grid;
@@ -104,24 +127,9 @@
     text-align: center;
   }
   .paso .icono { font-size: 2rem; margin-bottom: 0.8rem; }
-  .paso h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
-  .paso p { font-size: 0.85rem; color: var(--gris); line-height: 1.5; }
-  .btn-hero {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--amarillo);
-    color: #1a1a1a;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    padding: 0.9rem 2rem;
-    border-radius: 10px;
-    text-decoration: none;
-    transition: all 0.2s;
-    box-shadow: 0 4px 20px rgba(245,200,0,0.4);
-  }
-  .btn-hero:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,200,0,0.5); }
+  .paso h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--texto); }
+  .paso p   { font-size: 0.85rem; color: var(--gris); line-height: 1.5; }
+
   @media (max-width: 768px) {
     .hero { grid-template-columns: 1fr; padding: 2.5rem 1.5rem; }
     .hero-text h1 { font-size: 2rem; }
@@ -147,20 +155,31 @@
     {% if eleccion and eleccion.estado == 'activa' %}
       <a href="{{ url_for('login') }}" class="btn-hero">Ir a votar →</a>
     {% else %}
-      <a href="{{ url_for('login') }}" class="btn-hero" style="opacity:0.7;">Ingresar →</a>
+      <a href="{{ url_for('login') }}" class="btn-hero" style="opacity:0.75;">Ingresar →</a>
     {% endif %}
   </div>
+
   <div class="hero-visual">
     <div class="hero-stat">
-      <div class="num">🎖️</div>
-      <div><div class="num" style="font-size:1.4rem;">Personero</div><div class="lbl">Representante estudiantil</div></div>
+      <span style="font-size:2rem;">🎖️</span>
+      <div>
+        <div class="num">Personero</div>
+        <div class="lbl">Representante estudiantil</div>
+      </div>
     </div>
     <div class="hero-stat">
-      <div class="num">📋</div>
-      <div><div class="num" style="font-size:1.4rem;">Contralor</div><div class="lbl">Control y transparencia</div></div>
+      <span style="font-size:2rem;">📋</span>
+      <div>
+        <div class="num">Contralor</div>
+        <div class="lbl">Control y transparencia</div>
+      </div>
     </div>
     <div class="hero-stat">
-      <div><div class="num">2027</div><div class="lbl">Año escolar</div></div>
+      <div>
+        <!-- ✏️ AÑO — Cambia 2027 por el año actual -->
+        <div class="num">2027</div>
+        <div class="lbl">Año escolar</div>
+      </div>
     </div>
   </div>
 </div>
